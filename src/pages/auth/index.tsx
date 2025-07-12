@@ -1,10 +1,11 @@
 import React from 'react';
 import Navbar from '@/components/Navbar/Navbar';
-import AuthModal from '@/components/Navbar/Modals/AuthModal';
 import { authModalState } from '@/atoms/authModalAtoms';
 import { useRecoilValue } from 'recoil';
+import dynamic from "next/dynamic";
+const AuthModal = dynamic(() => import('@/components/Modals/AuthModal'), { ssr: false });
 
-type AuthPageProps = {};
+type AuthPageProps = {};  
 
 const AuthPage: React.FC<AuthPageProps> = () => {
   const authModal = useRecoilValue(authModalState);

@@ -1,10 +1,14 @@
 import React from 'react';
-
+import { useSetRecoilState } from 'recoil';
+import { authModalState } from '@/atoms/authModalAtoms';
 type LoginProps = {
-    
 };
 
 const Login:React.FC<LoginProps> = () => {
+    const setAuthModalState=useSetRecoilState(authModalState);
+    const handleClick =(type: "login" | "register" | "forgotPassword")=>{
+        setAuthModalState((prev) => ({ ...prev, view: type }));
+    }
     return (
         <form className="space-y-6 px-6 pb-4">
             <h3 className="text-xl font-semibold text-white">Sign in to  Code With Me</h3>
@@ -37,11 +41,11 @@ const Login:React.FC<LoginProps> = () => {
 <button type="submit" className="w-full py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
     Login
 </button>
-<button className="flex w-full justify-center">
+<button className="flex w-full justify-center" onClick={()=> handleClick("forgotPassword")}>
     <a href="#" className="text-sm text-blue-500 hover:text-blue-700">Forgot your password?</a>
 </button>
 <div className='text-sm font-medium text-gray-300'>
-    Not registered?{"  "} <a href="#" className="text-blue-500 hover:underline"> Create an account</a>
+    Not registered?{"  "} <a href="#" className="text-blue-500 hover:underline "onClick={()=> handleClick("register")}> Create an account</a>
 </div>
     </form>
     )
