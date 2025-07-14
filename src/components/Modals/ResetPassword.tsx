@@ -13,7 +13,7 @@ const ResetPassword:React.FC<ResetPasswordProps> = () => {
                 Enter your email address and we will send you a link to reset your password.
             </p>
             <div>
-                <label htmlFor='email' className='block text-sm font-medium block mb-2 text-gray-300'>
+                <label htmlFor='email' className='block text-sm font-medium mb-2 text-gray-300'>
                     Your email
                 </label>
                 <input
