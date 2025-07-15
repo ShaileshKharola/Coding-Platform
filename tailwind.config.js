@@ -8,6 +8,7 @@ module.exports = {
 		// Or if using `src` directory:
 		"./src/**/*.{js,ts,jsx,tsx}",
 	],
+	
 	theme: {
 		extend: {
 			colors: {
@@ -29,6 +30,7 @@ module.exports = {
 				"dark-green-s": "rgb(44 187 93)",
 				"dark-blue-s": "rgb(10 132 255)",
 			},
+			
 		},
 	},
 	plugins: [],
