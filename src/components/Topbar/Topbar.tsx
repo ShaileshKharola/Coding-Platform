@@ -2,11 +2,16 @@ import { auth } from '@/firebase/firebase';
 import Link from 'next/link';
 import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-
-type TopbarProps = {};
+import Logout from '../Buttons/Logout';
+import { useSetRecoilState } from 'recoil';
+import { authModalState } from '@/atoms/authModalAtoms';
+type TopbarProps = {
+    problemPage?:boolean
+};
 
 const Topbar:React.FC<TopbarProps> = () => {
     const [user]=useAuthState(auth);
+    const setAuthModalState=useSetRecoilState(authModalState);
     return (
         <nav className='relative flex h-[50px] w-full shrink-0 items-center px-5 bg-gray-700 text-dark-gray-7'>
             <div className='flex w-full items-center justify-between max-[1200px] mx-auto'>
@@ -26,7 +31,8 @@ const Topbar:React.FC<TopbarProps> = () => {
                 </div>
                 
             {!user && (
-                <Link href='/auth'>
+                <Link href='/auth' onClick={() => { setAuthModalState((prev)=>({...prev, isOpen: true, type: 'login' })) }}>
+                    <span className='sr-only'>Sign In</span>
                     <button className='bg-gray-300 py-1.5 px-3 rounded-md text-sm font-medium text-dark-gray-7 hover:bg-gray-200 transition-colors duration-200 ease-in-out'>
                         Sign In
                     </button>
@@ -35,8 +41,12 @@ const Topbar:React.FC<TopbarProps> = () => {
             {user && ( 
                 <div className='cursor-pointer group relative'>
                     <img src='./avatar.png' alt='user profile img' className='h-8 w-8 rounded-full'/>
+                    <div className='absolute top-10 right-0 mx-auto bg-white shadow-lg z-40 group-hover:scale-100 scale-0 transition-all duration-300 ease-in-out'>
+                        <p className='text-sm'>{user.email}</p>
+                    </div>
                 </div>
             )}
+            {user && <Logout />}
             </div>
         </div>
             </nav>
