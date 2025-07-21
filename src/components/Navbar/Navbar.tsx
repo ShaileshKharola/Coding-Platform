@@ -3,7 +3,6 @@ import Link from "next/link";
 import { useSetRecoilState } from 'recoil';
 import { authModalState } from '@/atoms/authModalAtoms';
 import Image from 'next/image';
-import logo from './logo.png';
 type NavbarProps = {
 };
 const Navbar: React.FC<NavbarProps> = () => {
