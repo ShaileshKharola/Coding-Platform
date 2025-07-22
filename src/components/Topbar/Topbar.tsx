@@ -8,6 +8,7 @@ import { authModalState } from '@/atoms/authModalAtoms';
 import Image from 'next/image';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { BsList } from 'react-icons/bs';
+import Timer from '../Timer/timer';
 type TopbarProps = {
     problemPage?:boolean
 };
@@ -47,8 +48,7 @@ const Topbar:React.FC<TopbarProps> = ({problemPage}) => {
                 >
                     Premium
                 </a>
-                </div>
-            {problemPage && <Timer ></Timer>}    
+                </div>   
             {!user && (
                 <Link href='/auth' onClick={() => { setAuthModalState((prev)=>({...prev, isOpen: true, type: 'login' })) }}>
                     <span className='sr-only'>Sign In</span>
@@ -57,6 +57,7 @@ const Topbar:React.FC<TopbarProps> = ({problemPage}) => {
                     </button>
                 </Link>
             )}
+            {problemPage && <Timer />} 
             {user && ( 
                 <div className='cursor-pointer group relative'>
                     <img src='/avatar.png' alt='user profile img' className='h-8 w-8 rounded-full'/>
