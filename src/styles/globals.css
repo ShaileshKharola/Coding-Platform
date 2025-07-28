@@ -1,30 +1,23 @@
 @import "tailwindcss";
+
 ::-webkit-scrollbar {
 	width: 0.5rem;
 }
 
 ::-webkit-scrollbar-track {
-	background: #282828;
+	background: #5b5555;
 }
 
 ::-webkit-scrollbar-thumb {
 	background: #4d4d4d;
 }
-.cm-scroller,
-.cm-gutters {
-	background-color: #282828 !important;
-}
-.cm-focused {
-	outline: none !important;
-}
-
 .split {
 	display: flex;
 	flex-direction: row;
 }
 
 .gutter {
-	background-color: rgb(26, 26, 26);
+	background-color: rgb(90, 83, 83);
 	background-repeat: no-repeat;
 	background-position: 50%;
 }

@@ -6,9 +6,11 @@ type ProblemPageProps = {};
 
 const ProblemPageProps:React.FC<ProblemPageProps> = () => {
     
-    return <div>
+    return (
+    <div>
         <Topbar problemPage={true}/>
         <Workspace/>
     </div>
+    );
 }
 export default ProblemPageProps;
