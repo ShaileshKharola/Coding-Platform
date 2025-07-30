@@ -11,7 +11,7 @@ const ProblemDescription:React.FC<problemDescriptionProps> = () => {
     return (
         <div className='bg-gray-200'>
             {/* tabs*/}
-            <div className='flex h-11 w-full items-center pt-2 bg-gray200 text-black overflow-x-hidden'>
+            <div className='flex h-11 w-full items-center pt-2 bg-gray-100 text-black overflow-x-hidden'>
                 <div className={'bg-gray-300 rounded-t-[5px] px-5 py-[10px] text-xs cursor-pointer'}>Description</div>
             </div>
             {/* Increased height here */}

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 ::-webkit-scrollbar {
 	width: 0.5rem;
 }
@@ -10,6 +11,12 @@
 
 ::-webkit-scrollbar-thumb {
 	background: #ffffffa2;
+}
+.cm-scroller,.cm-gutter {
+	background-color: rgba(255, 255, 255, 0.909) !important;
+}
+.cm-focused{
+	outline: none !important;
 }
 .split {
 	display: flex;
