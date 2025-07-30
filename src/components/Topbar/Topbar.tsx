@@ -45,20 +45,20 @@ const Topbar:React.FC<TopbarProps> = ({problemPage}) => {
                     href="#"
                     target='_blank'
                     rel='noreferrer'
-                    className='bg-gray-300 py-1.5 px-3 cursor-pointer rounded text-dark-gray-7 hover:bg-gray-200'>
+                    className='bg-gray-300 py-1.5 px-3 cursor-pointer rounded text-dark-gray-700 hover:bg-gray-200'>
                     Premium
                 </a>
                 </div>   
             {!user && (
                 <Link href='/auth' onClick={() => { setAuthModalState((prev)=>({...prev, isOpen: true, type: 'login' })) }}>
-                    <button className='bg-dark-fill-3 py-1 px-2 cursor-pointer rounded '>Sign In</button>
+                    <button className='bg-gray-300 py-1 px-2.5 text-dark-gray-700 cursor-pointer rounded hover:bg-gray-200'>Sign In</button>
                 </Link>
             )}
             {user && problemPage && <Timer />} 
             {user && ( 
                 <div className='cursor-pointer group relative'>
                     <img src='/avatar.png' alt='Avatar' width={30} height={30} className='rounded-full'/>
-                    <div className='absolute top-10 left-2/4 -translate-x-2/4  mx-auto bg-white text-black-500
+                    <div className='absolute top-10 left-2/4 -translate-x-2/4  mx-auto bg-white text-black
                     p-2 rounded shadow-lg z-40 group-hover:scale-100 scale-0 transition-all duration-300 ease-in-out'>
                         <p className='text-sm'>{user.email}</p>
                     </div>
