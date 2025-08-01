@@ -1,0 +1,18 @@
+export type Example ={
+    id: number;
+    inputText: string;
+    outputText: string;
+    explanation?: string;
+    img?: string;
+}
+export type Problem = {
+    id: string;
+    title: string;
+    problemStatement: string;
+    examples: Example[];
+    constraints: string;
+    handlerFunction: (fn: any) => boolean;
+    starterCode: string;
+    order: number;
+    starterFunctionName: string;
+};

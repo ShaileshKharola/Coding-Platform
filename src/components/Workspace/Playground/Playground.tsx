@@ -10,7 +10,9 @@ type PlaygroundProps = {
 };
 
 const Playground:React.FC<PlaygroundProps> = () => {
-    
+    const boilerPlate=`function twoSum(nums, target) {
+    //write your code here
+};`;
     return(
         
         <div className='flex flex-col bg-gray-200 relative'>
@@ -18,10 +20,10 @@ const Playground:React.FC<PlaygroundProps> = () => {
         <Split className="h-[calc(100vh-94px)]" direction="vertical" sizes={[60,40]} minSize={60} >
             <div className='w-full overflow-auto '>
                 <ReactCodeMirror className=''
-                value="const a=1;"
+                value={boilerPlate}
                 theme = {vscodeDark}
                 extensions={[javascript()]}
-                style={{fontSize: '14px'}}/>
+                style={{fontSize: '16px'}}/>
             </div>
             {/* testcase heading*/}
             <div className='w-full px-5 overflow-auto'>

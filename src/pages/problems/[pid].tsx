@@ -14,3 +14,9 @@ const ProblemPageProps:React.FC<ProblemPageProps> = () => {
     );
 }
 export default ProblemPageProps;
+// fetch the local data 
+// SSG--> static Site Generation--> when problems are open for coding purpose the site is generated at build time(when the problem is open for coding)
+// getStaticPaths=> its creates the dynamic routes
+const async function getStaticPaths(params:type) {
+    const paths=object.keys()
+}
