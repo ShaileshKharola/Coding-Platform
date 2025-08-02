@@ -1,12 +1,13 @@
+import { Problem } from '@/utils/types/problem';
 import React from 'react';
 import { AiFillLike } from 'react-icons/ai';
 import { BsCheck2Circle } from 'react-icons/bs';
 import { TiStarOutline } from 'react-icons/ti';
 type problemDescriptionProps = {
-    
+    problem:Problem;
 };
 
-const ProblemDescription:React.FC<problemDescriptionProps> = () => {
+const ProblemDescription:React.FC<problemDescriptionProps> = (problem) => {
 
     return (
         <div className='bg-gray-200'>
@@ -19,7 +20,7 @@ const ProblemDescription:React.FC<problemDescriptionProps> = () => {
                 <div className='px-5'>
                     <div className='w-full'>
                         <div className='flex space-x-4'>
-                            <div className='flex-1 mr-2 text-lg text-black font-medium'>1. Two Sum</div>
+                            <div className='flex-1 mr-2 text-lg text-black font-medium'>problem?.title</div>
                         </div>
                         <div className='flex item-center mt-3'>
                             <div className='text-green-600 bg-green-200 online-block rounded-[21px] bg-opacity-[.15] px-2.5 py-1 text-xs font-medium capitalize '>Easy</div>
@@ -40,11 +41,10 @@ const ProblemDescription:React.FC<problemDescriptionProps> = () => {
                     </div>
                     </div>
                     <div className='text-black text-sm'>
-                        <p className='mt-3'>Give an array of integers <code>nums</code>and an integer<code>target</code>,return<em> indices of the two numbers such that they add up to </em><code>target</code>.</p>
-                        <p className='mt-3'>
-                            You may assume that each input would have <strong>exactly one solution</strong>, and you may not use the same element twice.
-                        </p>
-                        <p className='mt-3'>You can return the answer in any order.</p>
+                        <div
+                        dangerouslySetInnerHTML={{__html: problem.problemStatement}}></div>
+
+                        
                     </div>
                     <div className='mt-4'>
                         <div><p className='font-medium text-black'>Example 1:</p>

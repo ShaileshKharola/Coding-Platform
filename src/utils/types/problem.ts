@@ -11,7 +11,7 @@ export type Problem = {
     problemStatement: string;
     examples: Example[];
     constraints: string;
-    handlerFunction: (fn: any) => boolean;
+    handlerFunction: ((fn: any) => boolean) | string;
     starterCode: string;
     order: number;
     starterFunctionName: string;
