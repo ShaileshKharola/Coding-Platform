@@ -7,7 +7,7 @@ type problemDescriptionProps = {
     problem:Problem;
 };
 
-const ProblemDescription:React.FC<problemDescriptionProps> = (problem) => {
+const ProblemDescription:React.FC<problemDescriptionProps> = ({problem}) => {
 
     return (
         <div className='bg-gray-200'>
@@ -20,7 +20,7 @@ const ProblemDescription:React.FC<problemDescriptionProps> = (problem) => {
                 <div className='px-5'>
                     <div className='w-full'>
                         <div className='flex space-x-4'>
-                            <div className='flex-1 mr-2 text-lg text-black font-medium'>problem?.title</div>
+                            <div className='flex-1 mr-2 text-lg text-black font-medium'>{problem?.title}</div>
                         </div>
                         <div className='flex item-center mt-3'>
                             <div className='text-green-600 bg-green-200 online-block rounded-[21px] bg-opacity-[.15] px-2.5 py-1 text-xs font-medium capitalize '>Easy</div>
@@ -47,30 +47,23 @@ const ProblemDescription:React.FC<problemDescriptionProps> = (problem) => {
                         
                     </div>
                     <div className='mt-4'>
-                        <div><p className='font-medium text-black'>Example 1:</p>
-                        <div className='example-card'>
-                            <pre><strong className='text black'>Input:</strong>nums = [2,7,11,15], target = 9{" "}
-                            <br/>
-                            <strong>Output:</strong>[0,1] <br />
-                            <strong>Explanation:</strong> Because nums[0] + nums[1] == 9,we return [0,1].
-                            </pre></div></div>
-                    <div>
-                        <p className='font-medium text-black'>Example 2:</p>
-                        <div className='example-card'>
-                            <pre><strong className='text black'>Input:</strong>nums = [3,2,4], target = 6{" "}
-                            <br/>
-                            <strong>Output:</strong>[1,2] <br />
-                            <strong>Explanation:</strong> Because nums[1] + nums[2] == 6,we return [1,2].
-                            </pre></div>
-                    </div>
-                    <div>
-                        <p className='font-medium text-black'>Example 3:</p>
-                        <div className='example-card'>
-                            <pre><strong className='text black'>Input:</strong>nums = [3,3], target = 6{" "}
-                            <br/>
-                            <strong>Output:</strong>[0,1] <br />
-                            <strong>Explanation:</strong> Because nums[0] + nums[1] == 6,we return [0,1].
-                            </pre></div></div>
+                        {problem.examples.map((example, index) => (
+                            <div key={example.id}>
+                                <p className='font-medium text-black'>Example {index + 1}:</p>
+                                <div className='example-card'>
+                                    <pre><strong className='text black'>Input:</strong>
+                                    {example.inputText}
+                                        <br/>
+                                        <strong>Output:</strong> {example.outputText}
+                                        <br />
+                                        {example.explanation && (<>
+                                        <strong>Explanation:</strong> {example.explanation}
+                                        </>)}
+                                    </pre>
+                                </div>
+                            </div>
+                        ))}
+
                     </div>
                     <div className='my-5'>
                         <div className='text-black font-medium'>Constraints:</div>
