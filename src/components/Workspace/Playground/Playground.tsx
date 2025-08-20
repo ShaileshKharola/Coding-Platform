@@ -1,18 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PreferenceNav from './PreferenceNav/PreferenceNav';
 import Split from 'react-split';
 import ReactCodeMirror from '@uiw/react-codemirror';
 import { vscodeDark } from '@uiw/codemirror-theme-vscode';
 import { javascript } from '@codemirror/lang-javascript';
 import EditorFooter from './EditorFooter';
+import { Problem } from '@/utils/types/problem';
 type PlaygroundProps = {
-    
+    problem: Problem;
 };
 
-const Playground:React.FC<PlaygroundProps> = () => {
-    const boilerPlate=`function twoSum(nums, target) {
-    //write your code here
-};`;
+const Playground:React.FC<PlaygroundProps> = ({ problem }) => {
+   const [activeTestCaseId,setActiveTestCaseId] =useState<number>(0);
     return(
         
         <div className='flex flex-col bg-gray-200 relative'>
@@ -20,7 +19,7 @@ const Playground:React.FC<PlaygroundProps> = () => {
         <Split className="h-[calc(100vh-94px)]" direction="vertical" sizes={[60,40]} minSize={60} >
             <div className='w-full overflow-auto '>
                 <ReactCodeMirror className=''
-                value={boilerPlate}
+                value={problem.starterCode}
                 theme = {vscodeDark}
                 extensions={[javascript()]}
                 style={{fontSize: '16px'}}/>
@@ -34,32 +33,23 @@ const Playground:React.FC<PlaygroundProps> = () => {
                     </div>
                 </div>
                 <div className='flex'>
-                    <div className='mr-2 items-start mt-2 text-black'>
-                        <div className='flex flex-wrap items-center gap-y-4'>
-                            <div className='font-medium items-center transition-all focus:outline-none inline-flex bg-gray-300 hover:bg-gray-400 relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap'>Test Case 1   </div>
+                    {problem.examples.map((example,index)=>(
+                        <div className='mr-2 items-start mt-2 text-black' key={example.id}
+                        onClick={() => setActiveTestCaseId(index)}>
+                            <div className='flex flex-wrap items-center gap-y-4'>
+                                <div className={`font-medium items-center transition-all focus:outline-none inline-flex bg-gray-300 hover:bg-gray-400 relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap ${activeTestCaseId === index ? 'bg-gray-400' : ''}`}>Test Case {index + 1}   </div>
+                            </div>
                         </div>
+                    ))}
                     </div>
-
-                    <div className='mr-2 items-start mt-2 text-black'>
-                        <div className='flex flex-wrap items-center gap-y-4'>
-                            <div className='font-medium items-center transition-all focus:outline-none inline-flex bg-gray-300 hover:bg-gray-400 relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap'>Test Case 2   </div>
-                        </div>
-                    </div>
-
-<div className='mr-2 items-start mt-2 text-black'>
-                        <div className='flex flex-wrap items-center gap-y-4'>
-                            <div className='font-medium items-center transition-all focus:outline-none inline-flex bg-gray-300 hover:bg-gray-400 relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap'>Test Case 3   </div>
-                        </div>
-                    </div>
-                </div>
                 <div className='font-semibold my-4'>
                     <p className='text-sm font-medium mt-4 text-black'>Input:</p>
                     <div className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-gray-300 border-transparent text-black mt-2'>
-                        nums: [2,7,11,15], target: 9
+                        {problem.examples[activeTestCaseId]?.inputText}
                         </div>
                         <p className='text-sm font-medium mt-4 text-black'>Output:</p>
                         <div className='m-full cursor-text rounded-lg border px-3 py-[10px] bg-gray-300 border-transparent text-black mt-2'>
-                            [0,1]
+                            {problem.examples[activeTestCaseId]?.outputText}
                         </div>
                     </div>
             </div>
