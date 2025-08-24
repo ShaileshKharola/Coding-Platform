@@ -4,6 +4,8 @@ import Topbar from "@/components/Topbar/Topbar";
 import React, { useState } from "react";
 
 export default function Home() {
+  const [loadingProblems, setLoadingProblems] = useState(true);
+
   return (
        <main className="bg-gray-200 min-h-screen">
       <Topbar />
@@ -18,8 +20,16 @@ export default function Home() {
   <a> ☠️</a>
 </h1>
 <div className="relative overflow-x-auto mx-auto px-6 pb-10">
+  {loadingProblems && (
+    <div className="max-w-[1200px] mx-auto sw:w-7/12 w-full animate-pulse">
+      {[...Array(10)].map((_, index) => (
+        <LoadingSkeleton key={index} />
+      ))}
+    </div>
+  )}
   <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-    <thead className="bg-gray-50 dark:bg-gray-800">
+    {!loadingProblems && (
+      <thead className="bg-gray-50 dark:bg-gray-800">
       <tr>
         <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
           Status
@@ -38,9 +48,23 @@ export default function Home() {
         </th>
       </tr>
     </thead>
-    <ProblemTable />
+    )}
+    <ProblemTable setLoadingProblems={setLoadingProblems}/>
   </table>
 </div>
 </main>
   );
+}
+const LoadingSkeleton=()=>{
+  return(
+    <div className="flex items-center space-x-12 mt-4 px-6">
+      <div className="w-6 h-6 bg-gray-300 rounded-full shrink-0"></div>
+      <div className="h-4 sm:w-52 w-32 bg-gray-300 rounded-full"></div>
+      <div className="h-4 sm:w-52 w-32 bg-gray-300 rounded w-1/4"></div>
+      <div className="h-4 sm:w-52 w-32 bg-gray-300 rounded w-1/4"></div>
+      <span className="sr-only">Loading...</span>
+
+    </div>
+
+  )
 }

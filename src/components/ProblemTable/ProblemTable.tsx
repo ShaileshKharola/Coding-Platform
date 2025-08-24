@@ -5,14 +5,20 @@ import Link from 'next/link';
 import { AiFillYoutube } from 'react-icons/ai';
 import { IoClose } from 'react-icons/io5';
 import YouTube from 'react-youtube';
+import { collection, doc, getDocs, orderBy, query } from 'firebase/firestore';
+import { firestore } from '@/firebase/firebase';
+import { DBProblem } from '@/utils/types/problem';
 
-type ProblemTableProps = {};
+type ProblemTableProps = {
+    setLoadingProblems: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-const ProblemTable: React.FC = () => {
+const ProblemTable: React.FC<ProblemTableProps> = ({setLoadingProblems}) => {
     const [youtubePlayer, setYoutubePlayer] = useState({
         isOpen: false,
         videoId: '',
     })
+    const problems=useGetProblems(setLoadingProblems)
     const closeModal= () => {
         setYoutubePlayer({
             isOpen: false,
@@ -23,32 +29,32 @@ const ProblemTable: React.FC = () => {
     return (
         <>
         <tbody className='bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700'>
-          {problems.map((doc,idx)=>{
-            const difficultyColor = doc.difficulty === 'Easy' ? 'text-green-500' : doc.difficulty === 'Medium' ? 'text-yellow-500' : 'text-red-500';
+          {problems.map((problem,idx)=>{
+            const difficultyColor = problem.difficulty === 'Easy' ? 'text-green-500' : problem.difficulty === 'Medium' ? 'text-yellow-500' : 'text-red-500';
             return(
-                <tr key={doc.id} className={`${idx % 2==1 ? 'bg-gray-50' : ''}`}>
+                <tr key={problem.id} className={`${idx % 2==1 ? 'bg-gray-50' : ''}`}>
                     <th className='px-2 py-4 whitespace-nowrap text-sm font-medium text-green-700 dark:text-white'>
                         <BsCheckCircle fontSize={"20"} width="18"/>
                         </th>
                <td className='px-2 py-4'>
-                <Link className='text-blue-600 dark:text-blue-400 hover:underline' href={`/problems/${doc.id}`}>                   
-                {doc.title}
+                <Link className='text-blue-600 dark:text-blue-400 hover:underline' href={`/problems/${problem.id}`}>                   
+                {problem.title}
                 </Link>
                </td>
                <td className={`px-2 py-4 ${difficultyColor}`}>
-                {doc.difficulty}
+                {problem.difficulty}
                </td>
                <td className='px-2 py-4'>
-                   {doc.category}
+                   {problem.category}
                </td>
                <td className='px-2 py-4'>
-                {doc.videoId ? (
+                {problem.videoId ? (
                     <AiFillYoutube
                     fontSize={"30"}
                     className='cursor-pointer hover:text-red-500'
                     onClick={()=> setYoutubePlayer({
                         isOpen: true,
-                        videoId: doc.videoId as string
+                        videoId: problem.videoId as string
                     })}
                     />
                 ):(<p className='text-gray-500'> Coming soon</p>)}
@@ -75,3 +81,21 @@ const ProblemTable: React.FC = () => {
     );
 }
 export default ProblemTable;
+function useGetProblems(setLoadingProblems:React.Dispatch<React.SetStateAction<boolean>>){
+    const [problems,setProblems]=useState<DBProblem[]>([]);
+    useEffect(()=>{
+        const getProblems=async()=>{
+            setLoadingProblems(true);
+            const q=query(collection(firestore,"problems"),orderBy("order","asc"))
+            const querySnapshot=await getDocs(q);
+            const tmp:DBProblem[]=[];
+            querySnapshot.forEach((doc)=>{
+                tmp.push({...doc.data(), id:doc.id} as DBProblem);
+            })
+            setProblems(tmp);
+            setLoadingProblems(false);
+        }
+        getProblems();
+    },[setLoadingProblems])
+    return problems
+}
