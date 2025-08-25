@@ -2,8 +2,9 @@ import { authModalState } from '@/atoms/authModalAtoms';
 import React, { useEffect } from 'react';
 import { useSetRecoilState } from 'recoil';
 import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
-import { auth } from '@/firebase/firebase';
+import { auth, firestore } from '@/firebase/firebase';
 import { useRouter } from 'next/router';
+import { doc, setDoc } from 'firebase/firestore';
 
 type SignupProps = {};
 
@@ -42,6 +43,18 @@ const Signup: React.FC<SignupProps> = () => {
         try {
             const newUser = await createUserWithEmailAndPassword(input.email, input.password);
             if (!newUser) return;
+            const userData={
+                uid: newUser.user.uid,
+                email: newUser.user.email,
+                displayName: input.displayName,
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+                likedProblems: [],
+                dislikedProblems: [],
+                solvedProblems: [],
+                starredProblems: [],
+            };
+            await setDoc(doc(firestore, "users", newUser.user.uid), userData);
             router.push("/");
         } catch (error: any) {
             console.error(error);
