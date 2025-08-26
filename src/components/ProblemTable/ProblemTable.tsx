@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { problems } from '@/mockProblems/problem';
 import { BsCheckCircle } from 'react-icons/bs';
 import Link from 'next/link';
 import { AiFillYoutube } from 'react-icons/ai';

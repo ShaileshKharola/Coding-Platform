@@ -1,5 +1,7 @@
-import { Problem } from '@/utils/types/problem';
-import React from 'react';
+import { firestore } from '@/firebase/firebase';
+import { DBProblem, Problem } from '@/utils/types/problem';
+import { doc, getDoc } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 import { AiFillLike } from 'react-icons/ai';
 import { BsCheck2Circle } from 'react-icons/bs';
 import { TiStarOutline } from 'react-icons/ti';
@@ -8,7 +10,7 @@ type problemDescriptionProps = {
 };
 
 const ProblemDescription:React.FC<problemDescriptionProps> = ({problem}) => {
-
+    const {currentProblem,loading,problemDifficultyClass} = useGetCurrentProblem(problem.id);
     return (
         <div className='bg-gray-200'>
             {/* tabs*/}
@@ -78,3 +80,24 @@ const ProblemDescription:React.FC<problemDescriptionProps> = ({problem}) => {
     )
 }
 export default ProblemDescription;
+function useGetCurrentProblem(problemId: string) {
+    const [currentProblem,setCurrentProblem]=useState<Problem | null>(null);
+    const [loading,setLoading]=useState<boolean>(true);
+    const[problemDifficulty,setProblemDifficulty]=useState<string>("");
+
+    useEffect(()=>{
+        const getCurrentProblem = async()=>{
+            setLoading(true);
+            const docRef=doc(firestore,"problems",problemId);
+            const docSnap=await getDoc(docRef);
+            if(docSnap.exists()){
+                const problem=docSnap.data();
+                setCurrentProblem({id:docSnap.id, ...problem} as DBProblem);
+                setProblemDifficulty(problem.difficulty==="Easy" ? "bg-olive text-olive": problem.difficulty==="Medium" ? "bg-yellow-500 text-yellow-500": "bg-red-500 text-red-500");
+            }
+            setLoading(false);
+        }
+        getCurrentProblem();
+    },[problemId])
+    return[currentProblem,loading,problemDifficulty]
+}
