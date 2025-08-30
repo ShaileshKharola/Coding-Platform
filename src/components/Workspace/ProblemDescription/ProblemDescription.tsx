@@ -1,7 +1,10 @@
-import { firestore } from '@/firebase/firebase';
+import CircleSkeletons from '@/components/skeletons/CircleSkeletons';
+import RectangleSkeleton from '@/components/skeletons/RectangleSkeleton';
+import { auth, firestore } from '@/firebase/firebase';
 import { DBProblem, Problem } from '@/utils/types/problem';
 import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { AiFillLike } from 'react-icons/ai';
 import { BsCheck2Circle } from 'react-icons/bs';
 import { TiStarOutline } from 'react-icons/ti';
@@ -10,7 +13,8 @@ type problemDescriptionProps = {
 };
 
 const ProblemDescription:React.FC<problemDescriptionProps> = ({problem}) => {
-    const [currentProblem, loading, problemDifficultyClass] = useGetCurrentProblem(problem.id) as [DBProblem | null, boolean, string];
+    const {currentProblem, loading, problemDifficultyClass} = useGetCurrentProblem(problem.id);
+    const {liked, disliked, solved, setData, starred} = useGetUserDataOnProblem(problem.id);
     return (
         <div className='bg-gray-200'>
             {/* tabs*/}
@@ -24,9 +28,9 @@ const ProblemDescription:React.FC<problemDescriptionProps> = ({problem}) => {
                         <div className='flex space-x-4'>
                             <div className='flex-1 mr-2 text-lg text-black font-medium'>{problem?.title}</div>
                         </div>
-                        {!loading && currentProblem && typeof currentProblem === 'object' && 'difficulty' in currentProblem && (
+                        {!loading && currentProblem && (
                             <div className='flex item-center mt-3'>
-                            <div className={`${problemDifficultyClass} online-block rounded-[21px] bg-opacity-[.15] px-2.5 py-1 text-xs font-medium capitalize `}>
+                            <div className={`${problemDifficultyClass} inline-block rounded-[21px] bg-opacity-[.15] px-2.5 py-1 text-xs font-medium capitalize `}>
                                 {currentProblem.difficulty}
                                 </div>
                             <div className='rounded p-[3px] ml-4 text-lg transition-colors duration-200 text-green-700'>
@@ -48,10 +52,10 @@ const ProblemDescription:React.FC<problemDescriptionProps> = ({problem}) => {
                         {loading && (
                             <div className='mt-3 flex space-x-2'>
                                 <RectangleSkeleton />
-                                <CircularSkeleton />
+                                <CircleSkeletons />
                                 <RectangleSkeleton />
                                 <RectangleSkeleton />
-                                <CircularSkeleton />
+                                <CircleSkeletons />
                             </div>
                         )}
                     </div>
@@ -106,11 +110,34 @@ function useGetCurrentProblem(problemId: string) {
             if(docSnap.exists()){
                 const problem=docSnap.data();
                 setCurrentProblem({id:docSnap.id, ...problem} as DBProblem);
-                setProblemDifficultyClass(problem.difficulty==="Easy" ? "bg-olive text-olive": problem.difficulty==="Medium" ? "bg-yellow-500 text-yellow-500": "bg-red-500 text-red-500");
+                setProblemDifficultyClass(problem.difficulty==="Easy" ? "bg-green-200 text-green-400": problem.difficulty==="Medium" ? "bg-yellow-200 text-yellow-400": "bg-red-200 text-red-400");
             }
             setLoading(false);
         }
         getCurrentProblem();
     },[problemId])
-    return[currentProblem,loading,problemDifficultyClass]
+    return{currentProblem,loading,problemDifficultyClass}
+}
+function useGetUserDataOnProblem(problemId: string){
+    const [data,setData]=useState({liked:false,disliked:false,starred:false,solved:false});
+    const [user] = useAuthState(auth);
+    useEffect(()=>{
+        const getUsersDataOnProblem=async()=>{
+            const userRef=doc(firestore,"users",user!.uid as string);
+            const userSnap=await getDoc(userRef);
+            if(userSnap.exists()){
+                const data=userSnap.data();
+                const {solvedProblems,likedProblems,dislikedProblems,starredProblems}=data;
+                setData({
+                    liked:likedProblems.includes(problemId),
+                    disliked:dislikedProblems.includes(problemId),
+                    starred:starredProblems.includes(problemId),
+                    solved:solvedProblems.includes(problemId)
+                })
+        }
+    }
+        if(user) getUsersDataOnProblem();
+        return ()=>setData({liked:false,disliked:false,starred:false,solved:false})
+    },[problemId,user])
+    return {...data,setData}
 }
