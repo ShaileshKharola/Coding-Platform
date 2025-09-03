@@ -9,6 +9,11 @@ import Image from 'next/image';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { BsList } from 'react-icons/bs';
 import Timer from '../Timer/Timer';
+import { useRouter } from 'next/router';
+import { problems } from '@/utils/problems';
+import ProblemDescription from '../Workspace/ProblemDescription/ProblemDescription';
+import { Problem } from '@/utils/types/problem';
+
 
 type TopbarProps = {
     problemPage?: boolean;
@@ -17,6 +22,22 @@ type TopbarProps = {
 const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
     const [user] = useAuthState(auth);
     const setAuthModalState = useSetRecoilState(authModalState);
+    const router=useRouter();
+    const handleProblemChange=(isForward: boolean)=>{
+        const {order} = problems[router.query.pid as string] as Problem;
+        const direction = isForward ? 1 : -1;
+        const nextProblemOrder = order + direction;
+        const nextProblemKey=Object.keys(problems).find((key) => problems[key].order === nextProblemOrder);
+        if(isForward && !nextProblemKey){
+            const firstProblemKey=Object.keys(problems).find((key) => problems[key].order === 1);
+            router.push(`/problems/${firstProblemKey}`);
+        }else if(!isForward && !nextProblemKey){
+            const lastProblemKey=Object.keys(problems).reduce((a, b) => problems[a].order > problems[b].order ? a : b);
+            router.push(`/problems/${lastProblemKey}`);
+        }else{
+            router.push(`/problems/${nextProblemKey}`);
+        }
+    }
     
     return (
         <nav className='relative flex h-[50px] w-full shrink-0 items-center px-2 sm:px-5 bg-gray-500 text-black'>
@@ -28,14 +49,14 @@ const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
                 
                 {/* Problem navigation - Only on problem pages */}
                 {problemPage && (<div className="flex items-center gap-2 sm:gap-4 flex-1 justify-center max-w-[300px] sm:max-w-none">
-                    <div className='flex items-center justify-center rounded bg-gray-300 hover:bg-gray-200 h-8 w-8 cursor-pointer'>
+                    <div className='flex items-center justify-center rounded bg-gray-300 hover:bg-gray-200 h-8 w-8 cursor-pointer'onClick={() => handleProblemChange(false)}>
                         <FaChevronLeft/>
                     </div>
                     <Link href="/" className='flex items-center gap-2 font-medium text-sm sm:text-base text-gray-200 cursor-pointer whitespace-nowrap'>
                         <BsList/>
                         <span className='hidden sm:inline'>ProblemList</span>
                     </Link>
-                    <div className='flex items-center justify-center rounded bg-gray-300 hover:bg-gray-200 h-8 w-8 cursor-pointer'>
+                    <div className='flex items-center justify-center rounded bg-gray-300 hover:bg-gray-200 h-8 w-8 cursor-pointer' onClick={() => handleProblemChange(true)}>
                         <FaChevronRight/>
                     </div>    
                 </div>)}
