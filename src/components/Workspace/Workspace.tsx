@@ -8,12 +8,14 @@ type WorkspaceProps = {
 };
 
 const Workspace: React.FC<WorkspaceProps> = ({ problem }) => {
-    
-    return <Split className='split' minSize={0}>
+    const [success, setSuccess] = React.useState(false);
+    return (
+        <Split className='split' minSize={0}>
         <ProblemDescription problem={problem}/>
         <div className='bg-gray-300'>
-        <Playground problem={problem}/>
+        <Playground problem={problem} setSuccess={setSuccess}/>
 </div>
     </Split>
+);
 }
 export default Workspace;

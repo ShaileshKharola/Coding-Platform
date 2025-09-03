@@ -6,12 +6,46 @@ import { vscodeDark } from '@uiw/codemirror-theme-vscode';
 import { javascript } from '@codemirror/lang-javascript';
 import EditorFooter from './EditorFooter';
 import { Problem } from '@/utils/types/problem';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '@/firebase/firebase';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/router';
+import { problems } from '@/utils/problems';
 type PlaygroundProps = {
     problem: Problem;
+    setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const Playground:React.FC<PlaygroundProps> = ({ problem }) => {
+const Playground:React.FC<PlaygroundProps> = ({ problem, setSuccess }) => {
    const [activeTestCaseId,setActiveTestCaseId] =useState<number>(0);
+   const [userCode,setUserCode]=useState<string>(problem.starterCode);
+   const [user]=useAuthState(auth);
+   const {query:{pid}}=useRouter();
+   const handleSubmit=async()=>{}
+    if(!user){
+        toast.error("Please login to submit", { position: "top-center",autoClose: 3000,theme:"dark" 
+        });
+        return;
+    }try{
+        const cb=new Function(`return ${userCode}`)();
+        const success=problems[pid as string].handleFunction(cb);
+        if(success){
+            toast.success("Congrats! All Test passed",{
+                position: "top-center",
+                autoClose: 3000,
+                theme: "dark"
+            })
+            setSuccess(true);
+            setTimeout(()=>{
+                setSuccess(false);
+            }, 3000);
+        }
+    }catch(error){
+        toast.error("Error submitting code", { position: "top-center",autoClose: 3000,theme:"dark" });
+   }
+   const onChange=(value:string)=>{
+       setUserCode(value);
+   }
     return(
         
         <div className='flex flex-col bg-gray-200 relative'>
@@ -21,6 +55,7 @@ const Playground:React.FC<PlaygroundProps> = ({ problem }) => {
                 <ReactCodeMirror className=''
                 value={problem.starterCode}
                 theme = {vscodeDark}
+                onChange={onChange}
                 extensions={[javascript()]}
                 style={{fontSize: '16px'}}/>
             </div>
@@ -54,7 +89,7 @@ const Playground:React.FC<PlaygroundProps> = ({ problem }) => {
                     </div>
             </div>
         </Split>
-        <EditorFooter/>
+        <EditorFooter handleSubmit={handleSubmit} />
         </div>
     )
 }
