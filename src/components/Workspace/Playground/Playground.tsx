@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PreferenceNav from './PreferenceNav/PreferenceNav';
 import Split from 'react-split';
 import ReactCodeMirror from '@uiw/react-codemirror';
@@ -7,45 +7,65 @@ import { javascript } from '@codemirror/lang-javascript';
 import EditorFooter from './EditorFooter';
 import { Problem } from '@/utils/types/problem';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '@/firebase/firebase';
+import { auth, firestore } from '@/firebase/firebase';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import { problems } from '@/utils/problems';
+import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
 type PlaygroundProps = {
     problem: Problem;
     setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
+    setSolved: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const Playground:React.FC<PlaygroundProps> = ({ problem, setSuccess }) => {
+const Playground:React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved }) => {
    const [activeTestCaseId,setActiveTestCaseId] =useState<number>(0);
    const [userCode,setUserCode]=useState<string>(problem.starterCode);
    const [user]=useAuthState(auth);
    const {query:{pid}}=useRouter();
-   const handleSubmit=async()=>{}
-    if(!user){
-        toast.error("Please login to submit", { position: "top-center",autoClose: 3000,theme:"dark" 
-        });
-        return;
-    }try{
-        const cb=new Function(`return ${userCode}`)();
-        const success=problems[pid as string].handleFunction(cb);
-        if(success){
-            toast.success("Congrats! All Test passed",{
-                position: "top-center",
-                autoClose: 3000,
-                theme: "dark"
+   const handleSubmit=async()=>{
+       if(!user){
+           toast.error("Please login to submit", { position: "top-center",autoClose: 3000,theme:"dark" 
+           });
+           return;
+       }try{
+            const cb=new Function(`return ${userCode}`)();
+            const success=problems[pid as string].handlerFunction(cb);
+            if(success){
+                toast.success("Congrats! Test passed",{
+                    position: "top-center",autoClose: 3000,theme: "dark"
             })
             setSuccess(true);
             setTimeout(()=>{
                 setSuccess(false);
-            }, 3000);
+            }, 4000);
+            const userRef=doc(firestore,"users",user.uid);
+            await updateDoc(userRef,{
+                solvedProblems:arrayUnion(pid),
+            });
+            setSolved(true);
         }
-    }catch(error){
-        toast.error("Error submitting code", { position: "top-center",autoClose: 3000,theme:"dark" });
+        }catch(error:any){
+            console.log(error.message);
+            if(error.message.startsWith("AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal")){
+                toast.error("Test cases failed", { position:"top-center",autoClose: 3000,theme:"dark"});
+            }else{
+                toast.error(error.message, { position: "top-center",autoClose: 3000,theme:"dark" });
+            }
+        }
    }
-   const onChange=(value:string)=>{
-       setUserCode(value);
-   }
+   useEffect(() => {
+       const code = localStorage.getItem(`code-${pid}`);
+        if (user) {
+           setUserCode(code ? JSON.parse(code) : problem.starterCode);
+        } else {
+           setUserCode(problem.starterCode);
+        }
+    }, [pid, problem.starterCode, user]);
+    const onChange = (value: string) => {
+        setUserCode(value);
+        localStorage.setItem(`code-${pid}`, JSON.stringify(value));
+    };
     return(
         
         <div className='flex flex-col bg-gray-200 relative'>
@@ -53,7 +73,7 @@ const Playground:React.FC<PlaygroundProps> = ({ problem, setSuccess }) => {
         <Split className="h-[calc(100vh-94px)]" direction="vertical" sizes={[60,40]} minSize={60} >
             <div className='w-full overflow-auto '>
                 <ReactCodeMirror className=''
-                value={problem.starterCode}
+                value={userCode}
                 theme = {vscodeDark}
                 onChange={onChange}
                 extensions={[javascript()]}
