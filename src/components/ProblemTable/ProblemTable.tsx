@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { AiFillYoutube } from 'react-icons/ai';
 import { IoClose } from 'react-icons/io5';
 import YouTube from 'react-youtube';
-import { collection, doc, getDocs, orderBy, query } from 'firebase/firestore';
-import { firestore } from '@/firebase/firebase';
+import { collection, doc, getDoc, getDocs, orderBy, query } from 'firebase/firestore';
+import { auth, firestore } from '@/firebase/firebase';
 import { DBProblem } from '@/utils/types/problem';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 type ProblemTableProps = {
     setLoadingProblems: React.Dispatch<React.SetStateAction<boolean>>;
@@ -18,6 +19,7 @@ const ProblemTable: React.FC<ProblemTableProps> = ({setLoadingProblems}) => {
         videoId: '',
     })
     const problems=useGetProblems(setLoadingProblems)
+    const solvedProblems=useGetSolvedProblems();
     const closeModal= () => {
         setYoutubePlayer({
             isOpen: false,
@@ -33,7 +35,8 @@ const ProblemTable: React.FC<ProblemTableProps> = ({setLoadingProblems}) => {
             return(
                 <tr key={problem.id} className={`${idx % 2==1 ? 'bg-gray-50' : ''}`}>
                     <th className='px-2 py-4 whitespace-nowrap text-sm font-medium text-green-700 dark:text-white'>
-                        <BsCheckCircle fontSize={"20"} width="18"/>
+                        {solvedProblems.includes(problem.id) && 
+                            <BsCheckCircle fontSize={"20"} width="18"/>}
                         </th>
                <td className='px-2 py-4'>
                 <Link className='text-blue-600 dark:text-blue-400 hover:underline' href={`/problems/${problem.id}`}>                   
@@ -97,4 +100,24 @@ function useGetProblems(setLoadingProblems:React.Dispatch<React.SetStateAction<b
         getProblems();
     },[setLoadingProblems])
     return problems
+}
+function useGetSolvedProblems(){
+    const [solvedProblems,setSolvedProblems]=useState<string[]>([]);
+    const [user]=useAuthState(auth);
+    useEffect(()=>{
+        const getSolvedProblems=async()=>{
+            const userRef=doc(firestore,"users",user!.uid);
+            const userDoc=await getDoc(userRef);
+            if(userDoc.exists()){
+                setSolvedProblems(userDoc.data().solvedProblems || []);
+            }
+        };
+        if(user){
+            getSolvedProblems();
+        }
+        if(!user){
+            setSolvedProblems([]);
+        }
+    },[user])
+    return solvedProblems;
 }
