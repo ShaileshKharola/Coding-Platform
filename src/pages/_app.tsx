@@ -3,7 +3,7 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import React from "react";
 import { RecoilRoot } from "recoil";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <RecoilRoot>

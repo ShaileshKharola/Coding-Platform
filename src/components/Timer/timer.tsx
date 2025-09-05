@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FiRefreshCcw } from "react-icons/fi";
 import Image from "next/image";
 
-type TimerProps = {};
+type TimerProps = object;
 
 const Timer: React.FC<TimerProps> = () => {
 	const [showTimer, setShowTimer] = useState<boolean>(false);

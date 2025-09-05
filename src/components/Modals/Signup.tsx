@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 import { doc, setDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 
-type SignupProps = {};
+type SignupProps = object;
 
 const Signup: React.FC<SignupProps> = () => {
     const setAuthModal = useSetRecoilState(authModalState);
@@ -58,9 +58,11 @@ const Signup: React.FC<SignupProps> = () => {
             };
             await setDoc(doc(firestore, "users", newUser.user.uid), userData);
             router.push("/");
-        } catch (error: any) {
-            toast.error(error.message,{position: "top-center", });
-        }finally{
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                toast.error(error.message, { position: "top-center" });
+            }
+        } finally {
             toast.dismiss("loadingToast");
         }
     };

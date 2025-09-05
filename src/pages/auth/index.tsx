@@ -9,7 +9,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 const AuthModal = dynamic(() => import('@/components/Modals/AuthModal'), { ssr: false });
 
-type AuthPageProps = {};  
+type AuthPageProps = object;  
 
 const AuthPage: React.FC<AuthPageProps> = () => {
   const authModal = useRecoilValue(authModalState);

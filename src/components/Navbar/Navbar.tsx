@@ -3,8 +3,7 @@ import Link from "next/link";
 import { useSetRecoilState } from 'recoil';
 import { authModalState } from '@/atoms/authModalAtoms';
 import Image from 'next/image';
-type NavbarProps = {
-};
+type NavbarProps = object;
 const Navbar: React.FC<NavbarProps> = () => {
     const setAuthModalState = useSetRecoilState(authModalState);
     const handleClick = () => {

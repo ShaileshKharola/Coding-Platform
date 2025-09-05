@@ -87,7 +87,7 @@ const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
                     
                     {user && ( 
                         <div className='cursor-pointer group relative flex-shrink-0'>
-                            <img 
+                            <Image
                                 src='/avatar.png' 
                                 alt='Avatar' 
                                 width={30} 

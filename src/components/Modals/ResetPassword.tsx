@@ -2,7 +2,7 @@ import React,{useEffect, useState} from 'react';
 import { auth } from '@/firebase/firebase';
 import { useSendPasswordResetEmail } from 'react-firebase-hooks/auth';
 import { toast } from 'react-toastify';
-type ResetPasswordProps = {};
+type ResetPasswordProps = object;
 
 const ResetPassword:React.FC<ResetPasswordProps> = () => {
     const [email, setEmail] = useState('');
