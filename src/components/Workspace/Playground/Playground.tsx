@@ -20,8 +20,9 @@ type PlaygroundProps = {
 
 const Playground:React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved }) => {
    const [activeTestCaseId,setActiveTestCaseId] =useState<number>(0);
-   const [userCode,setUserCode]=useState<string>(problem.starterCode);
+   let [userCode,setUserCode]=useState<string>(problem.starterCode);
    const [user]=useAuthState(auth);
+
    const {query:{pid}}=useRouter();
    const handleSubmit=async()=>{
        if(!user){
@@ -29,21 +30,25 @@ const Playground:React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved }
            });
            return;
        }try{
+            userCode=userCode.slice(userCode.indexOf(problem.starterFunctionName));
             const cb=new Function(`return ${userCode}`)();
-            const success=problems[pid as string].handlerFunction(cb);
-            if(success){
-                toast.success("Congrats! Test passed",{
+            const handler=problems[pid as string].handlerFunction;
+            if(typeof handler==="function"){
+                const success=handler(cb);
+                if(success){
+                    toast.success("Congrats! Test passed",{
                     position: "top-center",autoClose: 3000,theme: "dark"
-            })
-            setSuccess(true);
-            setTimeout(()=>{
-                setSuccess(false);
-            }, 4000);
-            const userRef=doc(firestore,"users",user.uid);
-            await updateDoc(userRef,{
-                solvedProblems:arrayUnion(pid),
-            });
-            setSolved(true);
+                })
+                setSuccess(true);
+                setTimeout(()=>{
+                    setSuccess(false);
+                }, 4000);
+                const userRef=doc(firestore,"users",user.uid);
+                await updateDoc(userRef,{
+                    solvedProblems:arrayUnion(pid),
+                });
+                setSolved(true);
+            }
         }
         }catch(error:any){
             console.log(error.message);
@@ -54,18 +59,27 @@ const Playground:React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved }
             }
         }
    }
-   useEffect(() => {
-       const code = localStorage.getItem(`code-${pid}`);
-        if (user) {
-           setUserCode(code ? JSON.parse(code) : problem.starterCode);
+	useEffect(() => {
+    const code = localStorage.getItem(`code-${pid}`);
+    if (user) {
+        if (code) {
+            try {
+                setUserCode(JSON.parse(code));
+            } catch {
+                setUserCode(problem.starterCode);
+            }
         } else {
-           setUserCode(problem.starterCode);
+            setUserCode(problem.starterCode);
         }
-    }, [pid, problem.starterCode, user]);
-    const onChange = (value: string) => {
-        setUserCode(value);
-        localStorage.setItem(`code-${pid}`, JSON.stringify(value));
-    };
+    } else {
+        setUserCode(problem.starterCode);
+    }
+}, [pid, user, problem.starterCode]);
+
+	const onChange = (value: string) => {
+		setUserCode(value);
+		localStorage.setItem(`code-${pid}`, JSON.stringify(value));
+	};
     return(
         
         <div className='flex flex-col bg-gray-200 relative'>
